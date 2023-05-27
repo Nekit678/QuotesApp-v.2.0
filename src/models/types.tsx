@@ -11,6 +11,7 @@ export interface TagType {
 export interface PageTemplateProps {
     quotes: QuoteData[]
     title: string
+    lastPage?: boolean
     loadIsFetching?: boolean
 
     likeFn: (id: string) => (void)
@@ -25,8 +26,7 @@ export interface QuoteData {
     liked: boolean
 }
 
-export interface QuoteProps {
-    quote: QuoteData
+export interface QuoteProps extends QuoteData {
     likeFn: (id: string) => (void)
 }
 

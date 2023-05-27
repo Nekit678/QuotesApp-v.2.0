@@ -3,7 +3,6 @@ import { TagType, getQuotesPageResponseItem } from "../../models/types";
 
 interface initialStateType {
     quotes: getQuotesPageResponseItem[]
-    likedId: string[]
     tagList: TagType[]
 }
 
@@ -11,10 +10,8 @@ interface initialStateType {
 let initialState: initialStateType = {
     tagList: [{ tag: "", title: "Лучшие цитаты" }, { tag: "history", title: "История" },
     { tag: "technology", title: "Технологии" }, { tag: "education", title: "Образование" },
-    { tag: "future", title: "Будущее" }],
-
-    quotes: [],
-    likedId: []
+    { tag: "future", title: "Будущее" }, { tag: "family", title: "Семья" }],
+    quotes: []
 }
 
 const appSlice = createSlice(
@@ -23,24 +20,20 @@ const appSlice = createSlice(
         initialState: initialState,
         reducers: {
             addQuotes(state, action: { type: string, payload: getQuotesPageResponseItem[] }) {
-                state.quotes = [...state.quotes, ...action.payload]
+                const list = [...state.quotes, ...action.payload]
+                const uniqueList = list.filter((value, index, self) =>
+                    index === self.findIndex((t) => (
+                        t._id === value._id
+                    )));
+                state.quotes = uniqueList
             },
             resetQuotes(state, action: { type: string, payload?: null }) {
                 state.quotes = []
-            },
-            toggleLike(state, action: { type: string, payload: { id: string } }) {
-                const index = state.likedId.indexOf(action.payload.id)
-                if (index === -1) {
-                    state.likedId.push(action.payload.id)
-                }
-                else {
-                    state.likedId.splice(index, 1)
-                }
             }
         }
     }
 )
 
 
-export const { addQuotes, toggleLike, resetQuotes } = appSlice.actions
+export const { addQuotes, resetQuotes } = appSlice.actions
 export default appSlice.reducer

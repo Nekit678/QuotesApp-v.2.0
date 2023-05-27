@@ -1,10 +1,9 @@
 import { Header } from "./components/Header";
 import { Content } from "./components/Content";
 
-
 function App() {
   return (
-    <div>
+    <div className="h-screen bg-black">
       <Header />
       <Content />
     </div>

@@ -4,8 +4,9 @@ import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../redux/store"
 import { getQuotes } from "../redux/selectors/app-selectors"
 import { useGetQuotesPageQuery } from "../redux/backend/api"
-import { addQuotes, resetQuotes, toggleLike } from "../redux/reducers/app-reducer"
-import { useEffect, useState } from "react"
+import { addQuotes, resetQuotes } from "../redux/reducers/app-reducer"
+import { useCallback, useEffect, useState } from "react"
+import { toggleLike } from "../redux/reducers/liked-reducer"
 
 
 
@@ -16,7 +17,7 @@ export const Content = () => {
     const [lastPage, setLastPage] = useState(false)
     const [page, setPage] = useState(1)
     const dispatch = useDispatch()
-    const quotes = useSelector((state: RootState) => getQuotes(state, page, tag))
+    const quotes = useSelector((state: RootState) => getQuotes(state))
     const pages = useSelector((state: RootState) => state.app.tagList)
     const { data, isFetching, isSuccess } = useGetQuotesPageQuery({ page, tag })
 
@@ -25,7 +26,7 @@ export const Content = () => {
         if (isSuccess) {
             dispatch(addQuotes(data.results))
 
-            if (data.totalPages === page) {
+            if (data.totalPages <= page) {
                 setLastPage(true)
             }
         }
@@ -43,16 +44,16 @@ export const Content = () => {
         dispatch(resetQuotes())
     }
 
-    const toggleLiked = (id: string) => {
+    const toggleLiked = useCallback((id: string) => {
         dispatch(toggleLike({ id }))
-    }
+    }, [dispatch])
 
     return (
-        <div className="bg-black">
+        <div className=" bg-black">
             <Routes>
                 {pages.map((item) => (<Route key={`${item.tag}`} path={`/${item.tag}`} element={<PageTemplate key={`${item.tag}`}
                     quotes={quotes} likeFn={toggleLiked} loadIsFetching={isFetching}
-                    showMoreFn={addPage} title={item.title} resetQuotes={resetPage} />} />))}
+                    showMoreFn={addPage} lastPage={lastPage} title={item.title} resetQuotes={resetPage} />} />))}
             </Routes>
         </div>
 
